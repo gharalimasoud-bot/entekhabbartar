@@ -228,6 +228,18 @@
     display:inline-block; font-size:11px; font-weight:700; color:var(--brass-deep);
     background:var(--brass-tint); padding:3px 9px; border-radius:5px; margin-right:6px;
   }
+  .new-badge{
+    display:inline-block; font-size:10.5px; font-weight:800; color:#fff;
+    background:var(--deed-green); padding:3px 9px; border-radius:5px; margin-right:6px;
+  }
+  .version-tag{
+    font-size:10.5px; font-weight:600; color:var(--ink-soft); background:var(--bg);
+    padding:2px 8px; border-radius:10px; margin-right:6px;
+  }
+  .alert-banner{
+    background:var(--brick-tint); border:1px solid #E3BFB6; color:var(--brick);
+  }
+  .alert-banner .alert-text{ font-weight:700; }
   .stamp{
     position:absolute; top:10px; left:10px;
     width:50px; height:50px; border-radius:50%;
@@ -369,7 +381,7 @@
     </div>
 
     <div class="auth-note">
-      نسخه نمایشی: اطلاعات ورود بین همه کسانی که این لینک را باز می‌کنند مشترک است. <b>اولین حسابی که ساخته شود، به‌طور خودکار «مدیر» یگانه سیستم می‌شود</b> — پس برای استفاده واقعی، حتماً شما اول ثبت‌نام کن. شماره تماس مالک هر ملک فقط برای ثبت‌کننده فایل و مدیر قابل مشاهده است، مگر این‌که مدیر برای همه فعالش کند.
+      نسخه ۰.۹۰ — اطلاعات ورود بین همه کسانی که این لینک را باز می‌کنند مشترک است. سه حساب مدیر ثابت (Gharali، Mohammadi، 7Lang) از قبل ساخته شده‌اند. بقیه‌ی مشاورین با ثبت‌نام خودشان، به‌عنوان کاربر عادی وارد سیستم می‌شوند. شماره تماس مالک هر ملک فقط برای ثبت‌کننده فایل و مدیر قابل مشاهده است، مگر این‌که مدیر برای همه فعالش کند.
     </div>
   </div>
 </div>
@@ -377,7 +389,7 @@
 <!-- ============ APP SCREEN ============ -->
 <div id="appScreen">
   <div class="topbar">
-    <div class="brand"><span class="mark">م</span> پرونده املاک</div>
+    <div class="brand"><span class="mark">م</span> پرونده املاک <span class="version-tag">نسخه ۰.۹۰</span></div>
     <div class="search-box">
       <input type="text" id="searchInput" placeholder="جستجو در کد، آدرس، مالک یا محله..." oninput="renderListings()">
     </div>
@@ -406,8 +418,22 @@
           </button>
           <div class="msel-panel" id="panelCategory">
             <label><input type="checkbox" value="commercial" onchange="onMselChange('Category')"> تجاری / اداری</label>
-            <label><input type="checkbox" value="apt2" onchange="onMselChange('Category')"> آپارتمان دو خوابه</label>
-            <label><input type="checkbox" value="apt3" onchange="onMselChange('Category')"> آپارتمان سه خوابه</label>
+            <label><input type="checkbox" value="apartment" onchange="onMselChange('Category')"> آپارتمان</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label>تعداد خواب</label>
+        <div class="msel" id="mselRooms">
+          <button type="button" class="msel-btn" onclick="toggleMsel('Rooms')">
+            <span id="labelRooms">همه</span><span class="chev">▾</span>
+          </button>
+          <div class="msel-panel" id="panelRooms">
+            <label><input type="checkbox" value="1" onchange="onMselChange('Rooms')"> ۱ خواب</label>
+            <label><input type="checkbox" value="2" onchange="onMselChange('Rooms')"> ۲ خواب</label>
+            <label><input type="checkbox" value="3" onchange="onMselChange('Rooms')"> ۳ خواب</label>
+            <label><input type="checkbox" value="4" onchange="onMselChange('Rooms')"> ۴ خواب</label>
           </div>
         </div>
       </div>
@@ -423,7 +449,7 @@
       </div>
 
       <div class="filter-group">
-        <label>قیمت کل (هزار تومان)</label>
+        <label>قیمت کل (تومان)</label>
         <div class="range-row">
           <input type="text" inputmode="decimal" id="fPriceMin" placeholder="از" oninput="normalizeDigits(this); renderListings()">
           <input type="text" inputmode="decimal" id="fPriceMax" placeholder="تا" oninput="normalizeDigits(this); renderListings()">
@@ -456,6 +482,9 @@
     </div>
 
     <div class="main">
+      <div class="banner alert-banner" id="unresolvedBanner" style="display:none;">
+        <span class="alert-text"></span>
+      </div>
       <div class="banner" id="infoBanner">
         <span>👥 این نسخه نمایشی است — همه مشاورانی که این لینک را باز کنند، یک بانک اطلاعاتی مشترک می‌بینند. روی اندروید از دکمه «نصب اپ» بالا استفاده کن؛ روی آیفون از دکمه Share در سافاری، گزینه «Add to Home Screen» رو بزن.</span>
         <button onclick="document.getElementById('infoBanner').style.display='none'">✕</button>
@@ -488,8 +517,7 @@
           <label>نوع ملک</label>
           <select id="fmCategory" onchange="onCategoryChange()">
             <option value="commercial">تجاری / اداری</option>
-            <option value="apt2">آپارتمان دو خوابه</option>
-            <option value="apt3">آپارتمان سه خوابه</option>
+            <option value="apartment">آپارتمان</option>
           </select>
         </div>
         <div>
@@ -509,8 +537,13 @@
 
         <!-- category-specific: apartments -->
         <div class="cat-block cat-apt" style="display:none;">
-          <label>تعداد اتاق</label>
-          <input type="text" inputmode="numeric" id="fmRooms" oninput="normalizeDigits(this)">
+          <label>تعداد خواب</label>
+          <select id="fmRooms">
+            <option value="1">۱ خواب</option>
+            <option value="2">۲ خواب</option>
+            <option value="3">۳ خواب</option>
+            <option value="4">۴ خواب</option>
+          </select>
         </div>
         <div class="cat-block cat-apt" style="display:none;">
           <label>طبقه</label>
@@ -547,11 +580,11 @@
         </div>
         <div></div>
         <div>
-          <label>قیمت هر متر (هزار تومان)</label>
+          <label>قیمت هر متر</label>
           <input type="text" inputmode="decimal" id="fmPricePerMeter" placeholder="مثلاً 350" oninput="normalizeDigits(this)">
         </div>
         <div>
-          <label>قیمت کل (هزار تومان)</label>
+          <label>قیمت کل</label>
           <input type="text" inputmode="decimal" id="fmPriceTotal" placeholder="مثلاً 42000" oninput="normalizeDigits(this)">
         </div>
 
@@ -605,8 +638,32 @@ let agentsCache = [];
 
 const STATUS_LABEL = { active:'فعال', reserved:'رزرو شده', sold:'فروخته شده' };
 const STATUS_CODE = { 'فعال':'active', 'رزرو شده':'reserved', 'فروخته شده':'sold' };
-const CATEGORY_LABEL = { commercial:'تجاری / اداری', apt2:'آپارتمان دو خوابه', apt3:'آپارتمان سه خوابه' };
-const CATEGORY_SHORT = { commercial:'تجاری/اداری', apt2:'۲ خوابه', apt3:'۳ خوابه' };
+const CATEGORY_LABEL = { commercial:'تجاری / اداری', apartment:'آپارتمان' };
+const CATEGORY_SHORT = { commercial:'تجاری/اداری', apartment:'آپارتمان' };
+const ADMIN_BOOTSTRAP = [
+  { username:'Gharali', password:'1234', displayName:'Gharali', phone:'' },
+  { username:'Mohammadi', password:'1234', displayName:'Mohammadi', phone:'' },
+  { username:'7Lang', password:'1234', displayName:'7Lang', phone:'' }
+];
+const NEIGHBORHOOD_KEYWORDS = {
+  'محله ۱': ['پاییز','سراج','باهنر','سفیر','زاگرس','پاسارگاد غربی'],
+  'محله ۲': ['فرگاز','امام خمینی','دستغیب','صلح','همایون','بیت المقدس','پاسارگاد شرقی','عادل آباد'],
+  'محله ۳': ['نارنج','طلاییه','توحیدی راد','رضایی','فرهنگیان']
+};
+function detectNeighborhood(address){
+  if(!address) return '';
+  for(const name in NEIGHBORHOOD_KEYWORDS){
+    const keywords = NEIGHBORHOOD_KEYWORDS[name];
+    for(let i=0;i<keywords.length;i++){
+      if(address.indexOf(keywords[i]) > -1) return name;
+    }
+  }
+  return '';
+}
+function physicalCategoryFor(category, rooms){
+  if(category === 'apartment') return (Number(rooms) <= 2) ? 'apt2' : 'apt3';
+  return category; // 'commercial'
+}
 
 // ⚠️ لینک Web app گوگل اپس‌اسکریپت
 const API_URL = 'https://script.google.com/macros/s/AKfycbx9Arg4U_NeCBocpT_glqcuwxkB4yu_8h_RSb18_nVuGcskxNgJcPg7BOUCk0iycE8/exec';
@@ -627,6 +684,20 @@ async function apiPost(action, payload){
     return await res.json();
   } catch(e){ return { ok:false, error:'خطا در اتصال به سرور' }; }
 }
+
+async function bootstrapAdmins(){
+  try{
+    const res = await apiGet();
+    if(!res.ok) return;
+    const existing = new Set((res.agents||[]).map(a => a.username));
+    for(const admin of ADMIN_BOOTSTRAP){
+      if(!existing.has(admin.username)){
+        await apiPost('signup', { agent: admin });
+      }
+    }
+  } catch(e){ /* best-effort, silent */ }
+}
+bootstrapAdmins();
 
 // ---------------- AUTH ----------------
 function toggleAuth(mode){
@@ -698,9 +769,15 @@ function rawToInternal(raw){
   if(amenitiesStr.indexOf('پ') > -1) amenities.push('پارکینگ');
   if(amenitiesStr.indexOf('آ') > -1) amenities.push('آسانسور');
   if(amenitiesStr.indexOf('ا') > -1) amenities.push('انباری');
+  const physicalCategory = raw.category;
+  const category = (physicalCategory === 'apt2' || physicalCategory === 'apt3') ? 'apartment' : physicalCategory;
+  const address = raw['آدرس'] || '';
+  const storedNeighborhood = raw['محله'] || '';
+  const neighborhood = storedNeighborhood || detectNeighborhood(address);
+  const createdAt = raw['تاریخ ثبت'] ? Number(toLatinDigits(String(raw['تاریخ ثبت']))) || null : null;
   return {
     id: raw['شناسه'],
-    category: raw.category,
+    category, physicalCategory,
     code: toLatinDigits(String(raw['کد ملک']==null?'':raw['کد ملک'])),
     ownerName: raw['نام'] || '',
     ownerPhone: toLatinDigits(String(raw['تلفن']==null?'':raw['تلفن'])),
@@ -708,11 +785,12 @@ function rawToInternal(raw){
     year: toLatinDigits(String(raw['سال ساخت']==null?'':raw['سال ساخت'])),
     pricePerMeter: num(raw['قیمت هر متر']),
     priceTotal: num(raw['قیمت کل']),
-    address: raw['آدرس'] || '',
+    address,
     desc: raw['توضیحات'] || '',
     filerName: raw['ثبت کننده فایل'] || '',
     coordinatorName: raw['هماهنگ کننده'] || '',
-    neighborhood: raw['محله'] || '',
+    neighborhood,
+    neighborhoodUnresolved: !neighborhood,
     status: STATUS_CODE[raw['وضعیت']] || 'active',
     phoneVisibleToAll: String(raw['نمایش شماره برای همه']).toUpperCase() === 'TRUE',
     usage: raw['کاربرد'] || '',
@@ -720,6 +798,8 @@ function rawToInternal(raw){
     floor: toLatinDigits(String(raw['طبقه']==null?'':raw['طبقه'])),
     unitsFloors: raw['تعداد واحد و طبقات'] || '',
     amenities,
+    createdAt,
+    isNew: !!(createdAt && (Date.now() - createdAt) <= 3*24*60*60*1000),
     _rowNumber: raw._rowNumber
   };
 }
@@ -741,7 +821,7 @@ function toBackendData(d){
     'وضعیت': STATUS_LABEL[d.status] || 'فعال'
   };
   if(d.category === 'commercial'){ payload['کاربرد'] = d.usage; }
-  if(d.category === 'apt2' || d.category === 'apt3'){
+  if(d.category === 'apartment'){
     payload['تعداد اتاق'] = d.rooms;
     payload['طبقه'] = d.floor;
     payload['تعداد واحد و طبقات'] = d.unitsFloors;
@@ -791,7 +871,7 @@ function formatNum(n){
 }
 
 // ---------------- MULTI-SELECT FILTER WIDGET ----------------
-const filterState = { category: new Set(), neighborhood: new Set(), status: new Set() };
+const filterState = { category: new Set(), neighborhood: new Set(), status: new Set(), rooms: new Set() };
 
 function toggleMsel(key){
   document.querySelectorAll('.msel-panel').forEach(p => { if(p.id !== 'panel'+key) p.classList.remove('open'); });
@@ -820,7 +900,7 @@ function updateMselLabel(key, defaultLabel){
   } else { labelEl.textContent = set.size + ' مورد انتخاب شده'; }
 }
 function mselResetAll(){
-  ['Category','Neighborhood','Status'].forEach(key => {
+  ['Category','Neighborhood','Status','Rooms'].forEach(key => {
     filterState[key.toLowerCase()] = new Set();
     document.querySelectorAll('#panel'+key+' input[type=checkbox]').forEach(cb => cb.checked = false);
     updateMselLabel(key, key === 'Neighborhood' ? 'همه محله‌ها' : 'همه');
@@ -851,15 +931,20 @@ function renderListings(){
     }
     if(filterState.category.size > 0 && !filterState.category.has(l.category)) return false;
     if(filterState.neighborhood.size > 0 && !filterState.neighborhood.has(l.neighborhood)) return false;
-    if(!isNaN(priceMin) && l.priceTotal < priceMin) return false;
-    if(!isNaN(priceMax) && l.priceTotal > priceMax) return false;
+    if(!isNaN(priceMin) && (l.priceTotal*1000000) < priceMin) return false;
+    if(!isNaN(priceMax) && (l.priceTotal*1000000) > priceMax) return false;
     if(!isNaN(sizeMin) && l.size < sizeMin) return false;
     if(!isNaN(sizeMax) && l.size > sizeMax) return false;
     if(filterState.status.size > 0 && !filterState.status.has(l.status)) return false;
+    if(filterState.rooms.size > 0 && !filterState.rooms.has(String(l.rooms))) return false;
     return true;
   });
 
-  filtered.sort((a,b) => (b._rowNumber||0) - (a._rowNumber||0));
+  filtered.sort((a,b) => {
+    const ca = a.createdAt||0, cb = b.createdAt||0;
+    if(ca !== cb) return cb - ca;
+    return (b._rowNumber||0) - (a._rowNumber||0);
+  });
   document.getElementById('resultCount').textContent = filtered.length + ' ملک';
   const grid = document.getElementById('grid');
   const empty = document.getElementById('emptyState');
@@ -872,11 +957,22 @@ function renderListings(){
   }
   empty.style.display = 'none';
   grid.innerHTML = filtered.map(l => cardHtml(l)).join('');
+  updateAdminAlert();
+}
+
+function updateAdminAlert(){
+  const el = document.getElementById('unresolvedBanner');
+  if(!el) return;
+  if(!currentUser || !currentUser.isAdmin){ el.style.display = 'none'; return; }
+  const count = listings.filter(l => l.neighborhoodUnresolved).length;
+  if(count === 0){ el.style.display = 'none'; return; }
+  el.style.display = 'flex';
+  el.querySelector('.alert-text').textContent = `⚠️ ${count} ملک محله‌شون مشخص نیست — لطفاً بررسی و اصلاح کن.`;
 }
 
 function categoryMetaLine(l){
   if(l.category === 'commercial') return `<span>🏷 ${escapeHtml(l.usage||'-')}</span>`;
-  if(l.category === 'apt2' || l.category === 'apt3') return `<span>🛏 ${l.rooms||0} خواب</span><span>🏢 طبقه ${escapeHtml(l.floor||'-')}</span>`;
+  if(l.category === 'apartment') return `<span>🛏 ${l.rooms||0} خواب</span><span>🏢 طبقه ${escapeHtml(l.floor||'-')}</span>`;
   return '';
 }
 
@@ -888,6 +984,7 @@ function cardHtml(l){
     <div class="card-top">
       <span class="type-tab">${escapeHtml(CATEGORY_SHORT[l.category] || l.category)}</span>
       <span class="code-badge">#${escapeHtml(l.code||'-')}</span>
+      ${l.isNew ? '<span class="new-badge">جدید</span>' : ''}
       <div class="stamp ${stampClass}">${STATUS_LABEL[l.status]}</div>
     </div>
     <div class="card-body">
@@ -897,8 +994,8 @@ function cardHtml(l){
         <span>📐 ${l.size ? l.size + ' متر' : '-'}</span>
         ${categoryMetaLine(l)}
       </div>
-      <div class="price-tag num">${formatNum(l.priceTotal)} <small>هزار تومان</small></div>
-      <div class="price-sub num">${formatNum(l.pricePerMeter)} هزار تومان / متر</div>
+      <div class="price-tag num">${formatNum(l.priceTotal*1000000)} <small>تومان</small></div>
+      <div class="price-sub num">${formatNum(l.pricePerMeter*1000000)} تومان / متر</div>
     </div>
     <div class="card-footer">
       <span>ثبت: ${escapeHtml(l.filerName || '-')}${l.coordinatorName ? ' | هماهنگ: '+escapeHtml(l.coordinatorName) : ''}</span>
@@ -917,9 +1014,8 @@ function onCategoryChange(){
   document.querySelectorAll('.cat-block').forEach(el => el.style.display = 'none');
   if(cat === 'commercial'){
     document.querySelectorAll('.cat-commercial').forEach(el => el.style.display = 'block');
-  } else if(cat === 'apt2' || cat === 'apt3'){
+  } else if(cat === 'apartment'){
     document.querySelectorAll('.cat-apt').forEach(el => el.style.display = 'block');
-    document.getElementById('fmRooms').value = cat === 'apt2' ? '2' : '3';
   }
 }
 
@@ -936,10 +1032,11 @@ async function populateAgentSelects(){
 async function openAddModal(){
   editingId = null;
   document.getElementById('editModalTitle').textContent = 'افزودن ملک جدید';
-  ['fmCode','fmOwnerName','fmOwnerPhone','fmNeighborhood','fmAddress','fmYear','fmSize','fmPricePerMeter','fmPriceTotal','fmDesc','fmRooms','fmFloor','fmUnitsFloors']
+  ['fmCode','fmOwnerName','fmOwnerPhone','fmNeighborhood','fmAddress','fmYear','fmSize','fmPricePerMeter','fmPriceTotal','fmDesc','fmFloor','fmUnitsFloors']
     .forEach(id => document.getElementById(id).value = '');
   document.getElementById('fmCategory').value = 'commercial';
   document.getElementById('fmUsage').value = 'تجاری';
+  document.getElementById('fmRooms').value = '2';
   document.getElementById('fmStatus').value = 'active';
   document.getElementById('amParking').checked = false;
   document.getElementById('amElevator').checked = false;
@@ -967,7 +1064,7 @@ async function openEditModal(id){
   document.getElementById('fmDesc').value = l.desc || '';
   document.getElementById('fmStatus').value = l.status;
   document.getElementById('fmUsage').value = l.usage || 'تجاری';
-  document.getElementById('fmRooms').value = l.rooms || '';
+  document.getElementById('fmRooms').value = l.rooms || '2';
   document.getElementById('fmFloor').value = l.floor || '';
   document.getElementById('fmUnitsFloors').value = l.unitsFloors || '';
   document.getElementById('amParking').checked = (l.amenities||[]).includes('پارکینگ');
@@ -980,7 +1077,6 @@ async function openEditModal(id){
   document.getElementById('fmFiler').value = filerAgentMatch ? filerAgentMatch.username : (currentUser ? currentUser.username : '');
   document.getElementById('fmCoordinator').value = coordAgentMatch ? coordAgentMatch.username : '';
   onCategoryChange();
-  document.getElementById('fmRooms').value = l.rooms || (l.category==='apt2' ? '2' : l.category==='apt3' ? '3' : '');
 
   document.getElementById('editModalOverlay').classList.add('show');
 }
@@ -992,6 +1088,8 @@ async function saveListing(){
   const address = document.getElementById('fmAddress').value.trim();
   if(!address){ alert('آدرس ملک را وارد کن.'); return; }
   const category = document.getElementById('fmCategory').value;
+  const rooms = parseInt(document.getElementById('fmRooms').value) || 0;
+  const physicalCategory = physicalCategoryFor(category, rooms);
 
   const amenities = [];
   if(document.getElementById('amParking').checked) amenities.push('پارکینگ');
@@ -1003,11 +1101,14 @@ async function saveListing(){
   const coordUsername = document.getElementById('fmCoordinator').value;
   const coordAgent = agentsCache.find(a => a.username === coordUsername);
 
+  let neighborhood = document.getElementById('fmNeighborhood').value.trim();
+  if(!neighborhood) neighborhood = detectNeighborhood(address);
+
   const data = {
     code, category,
     ownerName: document.getElementById('fmOwnerName').value.trim(),
     ownerPhone: document.getElementById('fmOwnerPhone').value.trim(),
-    neighborhood: document.getElementById('fmNeighborhood').value.trim(),
+    neighborhood,
     address,
     year: document.getElementById('fmYear').value.trim(),
     size: parseFloat(document.getElementById('fmSize').value) || 0,
@@ -1016,7 +1117,7 @@ async function saveListing(){
     desc: document.getElementById('fmDesc').value.trim(),
     status: document.getElementById('fmStatus').value,
     usage: document.getElementById('fmUsage').value,
-    rooms: parseInt(document.getElementById('fmRooms').value) || 0,
+    rooms,
     floor: document.getElementById('fmFloor').value.trim(),
     unitsFloors: document.getElementById('fmUnitsFloors').value.trim(),
     amenities,
@@ -1031,9 +1132,18 @@ async function saveListing(){
 
   let res;
   if(editingId){
-    res = await apiPost('updateListing', { category, id: editingId, data: backendData });
+    const orig = listings.find(x => x.id === editingId);
+    const originalPhysical = orig ? orig.physicalCategory : physicalCategory;
+    if(originalPhysical !== physicalCategory){
+      // تعداد خواب عوض شده و ملک باید به فایل دیگه‌ای منتقل بشه
+      const delRes = await apiPost('deleteListing', { category: originalPhysical, id: editingId });
+      if(!delRes.ok){ saveBtn.textContent = originalLabel; saveBtn.disabled = false; alert('انتقال ملک ناموفق بود: ' + (delRes.error||'')); return; }
+      res = await apiPost('addListing', { category: physicalCategory, data: backendData });
+    } else {
+      res = await apiPost('updateListing', { category: physicalCategory, id: editingId, data: backendData });
+    }
   } else {
-    res = await apiPost('addListing', { category, data: backendData });
+    res = await apiPost('addListing', { category: physicalCategory, data: backendData });
   }
 
   saveBtn.textContent = originalLabel; saveBtn.disabled = false;
@@ -1063,7 +1173,7 @@ function categoryDetailItems(l){
   if(l.category === 'commercial'){
     return `<div class="detail-item"><span class="k">کاربرد</span><span class="v">${escapeHtml(l.usage||'-')}</span></div>`;
   }
-  if(l.category === 'apt2' || l.category === 'apt3'){
+  if(l.category === 'apartment'){
     return `
       <div class="detail-item"><span class="k">تعداد اتاق</span><span class="v">${l.rooms||0}</span></div>
       <div class="detail-item"><span class="k">طبقه</span><span class="v">${escapeHtml(l.floor||'-')}</span></div>
@@ -1104,8 +1214,8 @@ async function openDetail(id){
       <div class="detail-item"><span class="k">آدرس</span><span class="v">${escapeHtml(l.address||'-')}</span></div>
       <div class="detail-item"><span class="k">متراژ</span><span class="v">${l.size||'-'} متر مربع</span></div>
       <div class="detail-item"><span class="k">سال ساخت</span><span class="v">${escapeHtml(l.year||'-')}</span></div>
-      <div class="detail-item"><span class="k">قیمت هر متر</span><span class="v num">${formatNum(l.pricePerMeter)} هزار تومان</span></div>
-      <div class="detail-item"><span class="k">قیمت کل</span><span class="v num">${formatNum(l.priceTotal)} هزار تومان</span></div>
+      <div class="detail-item"><span class="k">قیمت هر متر</span><span class="v num">${formatNum(l.pricePerMeter*1000000)} تومان</span></div>
+      <div class="detail-item"><span class="k">قیمت کل</span><span class="v num">${formatNum(l.priceTotal*1000000)} تومان</span></div>
       ${categoryDetailItems(l)}
       <div class="detail-item"><span class="k">ثبت‌کننده فایل</span><span class="v">${escapeHtml(l.filerName||'-')}</span></div>
       <div class="detail-item"><span class="k">هماهنگ‌کننده</span><span class="v">${escapeHtml(l.coordinatorName||'-')}</span></div>
