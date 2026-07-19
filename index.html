@@ -1009,9 +1009,10 @@ function updateAdminAlert(){
   el.style.display = 'flex';
   el.style.cursor = 'pointer';
 
-  el.querySelector('.alert-text').textContent =
-    `⚠️ ${count} ملک محله‌شون مشخص نیست — برای مشاهده و اصلاح کلیک کنید.`;
-
+ el.querySelector('.alert-text').textContent =
+  showOnlyUnknownNeighborhood
+    ? `📋 در حال نمایش فقط ${count} فایل بدون محله — برای بازگشت به همه فایل‌ها کلیک کنید.`
+    : `⚠️ ${count} ملک محله‌شون مشخص نیست — برای مشاهده و اصلاح کلیک کنید.`;
   el.onclick = () => {
 
     showOnlyUnknownNeighborhood = !showOnlyUnknownNeighborhood;
