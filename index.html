@@ -718,42 +718,80 @@ const CATEGORY_FIELDS = {
 
 function rawToInternal(raw){
   const num = (v) => parseFloat(toLatinDigits(String(v==null?'':v))) || 0;
+
+  const formatPhone = (phone) => {
+    if (!phone) return '';
+
+    let p = toLatinDigits(String(phone)).replace(/\D/g, '');
+
+    // اگر صفر اول شماره موبایل حذف شده باشد
+    if (p.length === 10 && p.startsWith('9')) {
+      p = '0' + p;
+    }
+
+    return p;
+  };
+
   const amenitiesStr = String(raw['پ آ ا']||'');
   const amenities = [];
+
   if(amenitiesStr.indexOf('پ') > -1) amenities.push('پارکینگ');
   if(amenitiesStr.indexOf('آ') > -1) amenities.push('آسانسور');
   if(amenitiesStr.indexOf('ا') > -1) amenities.push('انباری');
+
   const physicalCategory = raw.category;
   const category = (physicalCategory === 'apt2' || physicalCategory === 'apt3') ? 'apartment' : physicalCategory;
+
   const address = raw['آدرس'] || '';
   const storedNeighborhood = raw['محله'] || '';
   const neighborhood = storedNeighborhood || detectNeighborhood(address);
-  const createdAt = raw['تاریخ ثبت'] ? Number(toLatinDigits(String(raw['تاریخ ثبت']))) || null : null;
+
+  const createdAt = raw['تاریخ ثبت']
+    ? Number(toLatinDigits(String(raw['تاریخ ثبت']))) || null
+    : null;
+
   return {
     id: raw['شناسه'],
-    category, physicalCategory,
+    category,
+    physicalCategory,
+
     code: toLatinDigits(String(raw['کد ملک']==null?'':raw['کد ملک'])),
+
     ownerName: raw['نام'] || '',
-    ownerPhone: toLatinDigits(String(raw['تلفن']==null?'':raw['تلفن'])),
+    ownerPhone: formatPhone(raw['تلفن']),
+
     size: num(raw['متراژ']),
     year: toLatinDigits(String(raw['سال ساخت']==null?'':raw['سال ساخت'])),
+
     pricePerMeter: num(raw['قیمت هر متر']),
     priceTotal: num(raw['قیمت کل']),
+
     address,
     desc: raw['توضیحات'] || '',
+
     filerName: raw['ثبت کننده فایل'] || '',
     coordinatorName: raw['هماهنگ کننده'] || '',
+
     neighborhood,
     neighborhoodUnresolved: !neighborhood,
+
     status: STATUS_CODE[raw['وضعیت']] || 'active',
+
     phoneVisibleToAll: String(raw['نمایش شماره برای همه']).toUpperCase() === 'TRUE',
+
     usage: raw['کاربرد'] || '',
     rooms: parseInt(toLatinDigits(String(raw['تعداد اتاق']||'0'))) || 0,
+
     floor: toLatinDigits(String(raw['طبقه']==null?'':raw['طبقه'])),
+
     unitsFloors: raw['تعداد واحد و طبقات'] || '',
+
     amenities,
+
     createdAt,
+
     isNew: !!(createdAt && (Date.now() - createdAt) <= 3*24*60*60*1000),
+
     _rowNumber: raw._rowNumber
   };
 }
