@@ -155,6 +155,13 @@
     font-size:13px; background:#FCFAF5;
   }
   .range-row{ display:flex; gap:8px; }
+  .range-item{ flex:1; min-width:0; }
+  .price-field-wrap{ position:relative; }
+  .price-suggest{
+    display:none; font-size:11px; color:var(--brass-deep); margin-top:4px; line-height:1.5;
+  }
+  .price-suggest.clickable{ cursor:pointer; text-decoration:underline; font-weight:700; }
+  .price-suggest.clickable:hover{ color:var(--brass); }
   .range-row input{ width:100%; }
   .clear-filters{
     width:100%; padding:9px; border-radius:7px; border:1px dashed var(--line);
@@ -356,32 +363,10 @@
         <input type="password" id="loginPass" placeholder="••••••••">
       </div>
       <button class="btn-primary" onclick="handleLogin()">ورود</button>
-      <div class="auth-switch">حساب نداری؟ <a onclick="toggleAuth('signup')">ثبت‌نام مشاور جدید</a></div>
-    </div>
-
-    <div id="signupForm" style="display:none;">
-      <div class="field">
-        <label>نام و نام خانوادگی</label>
-        <input type="text" id="suName" placeholder="مثلاً علی رضایی">
-      </div>
-      <div class="field">
-        <label>شماره تماس</label>
-        <input type="text" inputmode="tel" id="suPhone" placeholder="09xxxxxxxxx" oninput="normalizeDigits(this)">
-      </div>
-      <div class="field">
-        <label>نام کاربری</label>
-        <input type="text" id="suUser" placeholder="یک نام کاربری انتخاب کن">
-      </div>
-      <div class="field">
-        <label>رمز عبور</label>
-        <input type="password" id="suPass" placeholder="حداقل ۴ کاراکتر">
-      </div>
-      <button class="btn-primary" onclick="handleSignup()">ساخت حساب و ورود</button>
-      <div class="auth-switch">قبلاً ثبت‌نام کردی؟ <a onclick="toggleAuth('login')">ورود</a></div>
     </div>
 
     <div class="auth-note">
-      نسخه ۰.۹۰ — اطلاعات ورود بین همه کسانی که این لینک را باز می‌کنند مشترک است. سه حساب مدیر ثابت (Gharali، Mohammadi، 7Lang) از قبل ساخته شده‌اند. بقیه‌ی مشاورین با ثبت‌نام خودشان، به‌عنوان کاربر عادی وارد سیستم می‌شوند. شماره تماس مالک هر ملک فقط برای ثبت‌کننده فایل و مدیر قابل مشاهده است، مگر این‌که مدیر برای همه فعالش کند.
+      نسخه ۰.۹۰ — حساب مشاورین فقط توسط مدیر و به‌صورت دستی از داخل خود گوگل‌شیت «حساب‌های مشاورین» ساخته می‌شود؛ ثبت‌نام از داخل اپ غیرفعال است. هر کسی که توی ستون «مدیر» آن شیت برایش TRUE نوشته شده باشد، در اپ هم مدیر حساب می‌شود. شماره تماس مالک هر ملک فقط برای ثبت‌کننده فایل و مدیر قابل مشاهده است، مگر این‌که مدیر برای همه فعالش کند.
     </div>
   </div>
 </div>
@@ -449,10 +434,16 @@
       </div>
 
       <div class="filter-group">
-        <label>قیمت کل (تومان)</label>
+        <label>قیمت کل (تومان) — مثلاً بنویس 22 برای ۲۲ میلیارد</label>
         <div class="range-row">
-          <input type="text" inputmode="decimal" id="fPriceMin" placeholder="از" oninput="normalizeDigits(this); renderListings()">
-          <input type="text" inputmode="decimal" id="fPriceMax" placeholder="تا" oninput="normalizeDigits(this); renderListings()">
+          <div class="range-item">
+            <input type="text" inputmode="decimal" id="fPriceMin" placeholder="از" oninput="normalizeDigits(this); renderListings(); showPriceSuggest(this,1000000000,'میلیارد')">
+            <div class="price-suggest" id="sugg-fPriceMin"></div>
+          </div>
+          <div class="range-item">
+            <input type="text" inputmode="decimal" id="fPriceMax" placeholder="تا" oninput="normalizeDigits(this); renderListings(); showPriceSuggest(this,1000000000,'میلیارد')">
+            <div class="price-suggest" id="sugg-fPriceMax"></div>
+          </div>
         </div>
       </div>
 
@@ -461,6 +452,14 @@
         <div class="range-row">
           <input type="text" inputmode="decimal" id="fSizeMin" placeholder="از" oninput="normalizeDigits(this); renderListings()">
           <input type="text" inputmode="decimal" id="fSizeMax" placeholder="تا" oninput="normalizeDigits(this); renderListings()">
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label>سال ساخت</label>
+        <div class="range-row">
+          <input type="text" inputmode="numeric" id="fYearMin" placeholder="از" oninput="normalizeDigits(this); renderListings()">
+          <input type="text" inputmode="numeric" id="fYearMax" placeholder="تا" oninput="normalizeDigits(this); renderListings()">
         </div>
       </div>
 
@@ -579,13 +578,15 @@
           <input type="text" inputmode="decimal" id="fmSize" placeholder="مثلاً 120" oninput="normalizeDigits(this)">
         </div>
         <div></div>
-        <div>
+        <div class="price-field-wrap">
           <label>قیمت هر متر</label>
-          <input type="text" inputmode="decimal" id="fmPricePerMeter" placeholder="مثلاً 350" oninput="normalizeDigits(this)">
+          <input type="text" inputmode="decimal" id="fmPricePerMeter" placeholder="مثلاً 350" oninput="normalizeDigits(this); showPriceSuggest(this,1000000,'میلیون',true)">
+          <div class="price-suggest" id="sugg-fmPricePerMeter"></div>
         </div>
-        <div>
-          <label>قیمت کل</label>
-          <input type="text" inputmode="decimal" id="fmPriceTotal" placeholder="مثلاً 42000" oninput="normalizeDigits(this)">
+        <div class="price-field-wrap">
+          <label>قیمت کل — بنویس 22 برای ۲۲ میلیارد</label>
+          <input type="text" inputmode="decimal" id="fmPriceTotal" placeholder="مثلاً 42000" oninput="normalizeDigits(this); showPriceSuggest(this,1000,'میلیارد')">
+          <div class="price-suggest" id="sugg-fmPriceTotal"></div>
         </div>
 
         <div class="full">
@@ -640,11 +641,6 @@ const STATUS_LABEL = { active:'فعال', reserved:'رزرو شده', sold:'فر
 const STATUS_CODE = { 'فعال':'active', 'رزرو شده':'reserved', 'فروخته شده':'sold' };
 const CATEGORY_LABEL = { commercial:'تجاری / اداری', apartment:'آپارتمان' };
 const CATEGORY_SHORT = { commercial:'تجاری/اداری', apartment:'آپارتمان' };
-const ADMIN_BOOTSTRAP = [
-  { username:'Gharali', password:'1234', displayName:'Gharali', phone:'' },
-  { username:'Mohammadi', password:'1234', displayName:'Mohammadi', phone:'' },
-  { username:'7Lang', password:'1234', displayName:'7Lang', phone:'' }
-];
 const NEIGHBORHOOD_KEYWORDS = {
   'محله ۱': ['پاییز','سراج','باهنر','سفیر','زاگرس','پاسارگاد غربی'],
   'محله ۲': ['فرگاز','امام خمینی','دستغیب','صلح','همایون','بیت المقدس','پاسارگاد شرقی','عادل آباد'],
@@ -685,51 +681,9 @@ async function apiPost(action, payload){
   } catch(e){ return { ok:false, error:'خطا در اتصال به سرور' }; }
 }
 
-async function bootstrapAdmins(){
-  try{
-    const res = await apiGet();
-    if(!res.ok) return;
-    const existing = new Set((res.agents||[]).map(a => a.username));
-    for(const admin of ADMIN_BOOTSTRAP){
-      if(!existing.has(admin.username)){
-        await apiPost('signup', { agent: admin });
-      }
-    }
-  } catch(e){ /* best-effort, silent */ }
-}
-bootstrapAdmins();
-
 // ---------------- AUTH ----------------
-function toggleAuth(mode){
-  document.getElementById('authError').innerHTML = '';
-  if(mode === 'signup'){
-    document.getElementById('loginForm').style.display='none';
-    document.getElementById('signupForm').style.display='block';
-    document.getElementById('authTitle').textContent = 'ثبت‌نام مشاور جدید';
-    document.getElementById('authSub').textContent = 'یک حساب برای دسترسی به پرونده املاک بساز';
-  } else {
-    document.getElementById('signupForm').style.display='none';
-    document.getElementById('loginForm').style.display='block';
-    document.getElementById('authTitle').textContent = 'ورود مشاور';
-    document.getElementById('authSub').textContent = 'به پرونده املاک دفتر خوش آمدید';
-  }
-}
 function showAuthError(msg){
   document.getElementById('authError').innerHTML = '<div class="auth-error">'+msg+'</div>';
-}
-async function handleSignup(){
-  const name = document.getElementById('suName').value.trim();
-  const phone = document.getElementById('suPhone').value.trim();
-  const user = document.getElementById('suUser').value.trim();
-  const pass = document.getElementById('suPass').value;
-  if(!name || !user || !pass){ showAuthError('لطفاً همه فیلدهای ضروری را پر کن.'); return; }
-  if(pass.length < 4){ showAuthError('رمز عبور باید حداقل ۴ کاراکتر باشد.'); return; }
-  showAuthError('در حال ثبت‌نام...');
-  const res = await apiPost('signup', { agent: { username:user, password:pass, displayName:name, phone } });
-  if(!res.ok){ showAuthError(res.error || 'خطا در ثبت‌نام.'); return; }
-  document.getElementById('authError').innerHTML = '';
-  currentUser = res.result;
-  enterApp();
 }
 async function handleLogin(){
   const user = document.getElementById('loginUser').value.trim();
@@ -870,6 +824,31 @@ function formatNum(n){
   return Number(n).toLocaleString('en-US');
 }
 
+// وقتی عدد کوچیکی تایپ می‌شه (مثلاً 22)، پیشنهاد می‌ده به چه عددی تبدیل بشه (مثلاً 22 میلیارد)
+function showPriceSuggest(inputEl, multiplier, unitLabel, hintOnly){
+  const hintEl = document.getElementById('sugg-' + inputEl.id);
+  if(!hintEl) return;
+  const raw = String(inputEl.value||'').replace(/[^\d.]/g, '');
+  const n = parseFloat(raw);
+  if(!raw || isNaN(n) || n <= 0){ hintEl.style.display = 'none'; hintEl.onclick = null; return; }
+  const suggestion = n * multiplier;
+  if(hintOnly){
+    hintEl.textContent = '≈ ' + formatNum(suggestion) + ' تومان (' + n + ' ' + unitLabel + ')';
+    hintEl.classList.remove('clickable');
+    hintEl.onclick = null;
+  } else {
+    hintEl.textContent = '→ یعنی ' + n + ' ' + unitLabel + ' = ' + formatNum(suggestion) + ' — کلیک کن';
+    hintEl.classList.add('clickable');
+    hintEl.onclick = () => {
+      inputEl.value = String(suggestion);
+      hintEl.style.display = 'none';
+      hintEl.onclick = null;
+      if(inputEl.id === 'fPriceMin' || inputEl.id === 'fPriceMax'){ renderListings(); }
+    };
+  }
+  hintEl.style.display = 'block';
+}
+
 // ---------------- MULTI-SELECT FILTER WIDGET ----------------
 const filterState = { category: new Set(), neighborhood: new Set(), status: new Set(), rooms: new Set() };
 
@@ -912,6 +891,9 @@ function clearFilters(){
   document.getElementById('fPriceMax').value='';
   document.getElementById('fSizeMin').value='';
   document.getElementById('fSizeMax').value='';
+  document.getElementById('fYearMin').value='';
+  document.getElementById('fYearMax').value='';
+  ['sugg-fPriceMin','sugg-fPriceMax'].forEach(sid => { const el=document.getElementById(sid); if(el){ el.style.display='none'; } });
   mselResetAll();
   renderListings();
 }
@@ -923,6 +905,8 @@ function renderListings(){
   const priceMax = parseFloat(document.getElementById('fPriceMax').value);
   const sizeMin = parseFloat(document.getElementById('fSizeMin').value);
   const sizeMax = parseFloat(document.getElementById('fSizeMax').value);
+  const yearMin = parseFloat(document.getElementById('fYearMin').value);
+  const yearMax = parseFloat(document.getElementById('fYearMax').value);
 
   let filtered = listings.filter(l => {
     if(q){
@@ -935,6 +919,8 @@ function renderListings(){
     if(!isNaN(priceMax) && (l.priceTotal*1000000) > priceMax) return false;
     if(!isNaN(sizeMin) && l.size < sizeMin) return false;
     if(!isNaN(sizeMax) && l.size > sizeMax) return false;
+    if(!isNaN(yearMin) && (parseFloat(l.year)||0) < yearMin) return false;
+    if(!isNaN(yearMax) && (parseFloat(l.year)||0) > yearMax) return false;
     if(filterState.status.size > 0 && !filterState.status.has(l.status)) return false;
     if(filterState.rooms.size > 0 && !filterState.rooms.has(String(l.rooms))) return false;
     return true;
@@ -1041,6 +1027,7 @@ async function openAddModal(){
   document.getElementById('amParking').checked = false;
   document.getElementById('amElevator').checked = false;
   document.getElementById('amStorage').checked = false;
+  ['sugg-fmPricePerMeter','sugg-fmPriceTotal'].forEach(id => { const el=document.getElementById(id); if(el){ el.style.display='none'; } });
   await populateAgentSelects();
   onCategoryChange();
   document.getElementById('editModalOverlay').classList.add('show');
@@ -1070,6 +1057,7 @@ async function openEditModal(id){
   document.getElementById('amParking').checked = (l.amenities||[]).includes('پارکینگ');
   document.getElementById('amElevator').checked = (l.amenities||[]).includes('آسانسور');
   document.getElementById('amStorage').checked = (l.amenities||[]).includes('انباری');
+  ['sugg-fmPricePerMeter','sugg-fmPriceTotal'].forEach(sid => { const el=document.getElementById(sid); if(el){ el.style.display='none'; } });
 
   await populateAgentSelects();
   const filerAgentMatch = agentsCache.find(a => a.displayName === l.filerName);
