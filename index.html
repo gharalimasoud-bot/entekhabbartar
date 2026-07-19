@@ -953,7 +953,12 @@ function renderListings(){
       if(!hay.includes(q)) return false;
     }
     if(filterState.category.size > 0 && !filterState.category.has(l.category)) return false;
+    if(filterState.category.size > 0 && !filterState.category.has(l.category)) return false;
     if(filterState.neighborhood.size > 0 && !filterState.neighborhood.has(l.neighborhood)) return false;
+
+// فقط فایل‌های بدون محله
+    if(showOnlyUnknownNeighborhood && !l.neighborhoodUnresolved) return false;
+
     if(!isNaN(priceMin) && (l.priceTotal*1000000) < priceMin) return false;
     if(!isNaN(priceMax) && (l.priceTotal*1000000) > priceMax) return false;
     if(!isNaN(sizeMin) && l.size < sizeMin) return false;
