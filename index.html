@@ -1013,10 +1013,14 @@ function updateAdminAlert(){
     `⚠️ ${count} ملک محله‌شون مشخص نیست — برای مشاهده و اصلاح کلیک کنید.`;
 
   el.onclick = () => {
-    showOnlyUnknownNeighborhood = true;
+
+    showOnlyUnknownNeighborhood = !showOnlyUnknownNeighborhood;
+
     renderListings();
-  };
-}
+
+    updateAdminAlert();
+
+};
 
 function categoryMetaLine(l){
   if(l.category === 'commercial') return `<span>🏷 ${escapeHtml(l.usage||'-')}</span>`;
