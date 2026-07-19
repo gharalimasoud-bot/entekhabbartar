@@ -888,6 +888,7 @@ function showPriceSuggest(inputEl, multiplier, unitLabel, hintOnly){
 }
 
 // ---------------- MULTI-SELECT FILTER WIDGET ----------------
+let showOnlyUnknownNeighborhood = false;
 const filterState = { category: new Set(), neighborhood: new Set(), status: new Set(), rooms: new Set() };
 
 function toggleMsel(key){
@@ -987,11 +988,29 @@ function renderListings(){
 function updateAdminAlert(){
   const el = document.getElementById('unresolvedBanner');
   if(!el) return;
-  if(!currentUser || !currentUser.isAdmin){ el.style.display = 'none'; return; }
+
+  if(!currentUser || !currentUser.isAdmin){
+    el.style.display = 'none';
+    return;
+  }
+
   const count = listings.filter(l => l.neighborhoodUnresolved).length;
-  if(count === 0){ el.style.display = 'none'; return; }
+
+  if(count === 0){
+    el.style.display = 'none';
+    return;
+  }
+
   el.style.display = 'flex';
-  el.querySelector('.alert-text').textContent = `⚠️ ${count} ملک محله‌شون مشخص نیست — لطفاً بررسی و اصلاح کن.`;
+  el.style.cursor = 'pointer';
+
+  el.querySelector('.alert-text').textContent =
+    `⚠️ ${count} ملک محله‌شون مشخص نیست — برای مشاهده و اصلاح کلیک کنید.`;
+
+  el.onclick = () => {
+    showOnlyUnknownNeighborhood = true;
+    renderListings();
+  };
 }
 
 function categoryMetaLine(l){
