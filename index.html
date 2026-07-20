@@ -697,7 +697,7 @@ async function handleLogin(){
 
 // ذخیره لاگین
 localStorage.setItem('currentUser', JSON.stringify(currentUser));
-
+console.log("SAVED:", localStorage.getItem("currentUser"));
 enterApp();
 }
 function handleLogout(){
@@ -1358,7 +1358,7 @@ function toLatinDigits(str){
     return ch;
   });
 }
-ffunction normalizeDigits(el){
+function normalizeDigits(el){
   const pos = el.selectionStart;
   const converted = toLatinDigits(el.value);
 
