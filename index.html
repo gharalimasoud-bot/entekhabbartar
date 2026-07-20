@@ -1216,12 +1216,15 @@ async function saveListing(){
 
 async function deleteListing(id){
   if(!confirm('این ملک حذف شود؟')) return;
-  const l = listings.find(x => x.id === id);
-  if(!l) return;
-  const res = await apiPost('deleteListing', { category: l.category, id });
-  if(!res.ok){ alert('حذف ناموفق بود: ' + (res.error||'')); return; }
-  await refreshData();
-}
+ const l = listings.find(x => x.id === id);
+if(!l) return;
+
+console.log("DELETE", l);
+
+const res = await apiPost('deleteListing', {
+  category: l.physicalCategory,
+  id
+});
 
 // ---------------- DETAIL ----------------
 function canSeePhone(l){
@@ -1289,7 +1292,7 @@ async function openDetail(id){
 async function togglePhoneVisibility(id, value){
   const l = listings.find(x => x.id === id);
   if(!l) return;
-  const res = await apiPost('togglePhone', { category: l.category, id, value });
+  const res = await apiPost('togglePhone', { category: l.physicalCategory, id, value });
   if(!res.ok){ alert('اعمال تغییر ناموفق بود: ' + (res.error||'')); return; }
   await refreshData();
   openDetail(id);
