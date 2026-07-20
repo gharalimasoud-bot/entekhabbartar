@@ -1216,15 +1216,24 @@ async function saveListing(){
 
 async function deleteListing(id){
   if(!confirm('این ملک حذف شود؟')) return;
- const l = listings.find(x => x.id === id);
-if(!l) return;
 
-console.log("DELETE", l);
+  const l = listings.find(x => x.id === id);
+  if(!l) return;
 
-const res = await apiPost('deleteListing', {
-  category: l.physicalCategory,
-  id
-});
+  console.log("DELETE", l);
+
+  const res = await apiPost('deleteListing', {
+    category: l.physicalCategory,
+    id
+  });
+
+  if(!res.ok){
+    alert('حذف ناموفق بود: ' + (res.error || ''));
+    return;
+  }
+
+  await refreshData();
+}
 
 // ---------------- DETAIL ----------------
 function canSeePhone(l){
