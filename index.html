@@ -1029,8 +1029,19 @@ function updateAdminAlert(){
 }
 
 function categoryMetaLine(l){
-  if(l.category === 'commercial') return `<span>🏷 ${escapeHtml(l.usage||'-')}</span>`;
-  if(l.category === 'apartment') return `<span>🛏 ${l.rooms||0} خواب</span><span>🏢 طبقه ${escapeHtml(l.floor||'-')}</span>`;
+  if(l.category === 'commercial'){
+    return `<span>🏷 ${escapeHtml(l.usage || '-')}</span>`;
+  }
+
+  if(l.category === 'apartment'){
+    return `
+      <span>🛏 ${l.rooms || 0} خواب</span>
+      <span>🏢 طبقه ${escapeHtml(l.floor || '-')}</span>
+      <span>🏠 ${escapeHtml(l.unitsFloors || '-')}</span>
+      <span>📅 ${escapeHtml(l.year || '-')}</span>
+    `;
+  }
+
   return '';
 }
 
