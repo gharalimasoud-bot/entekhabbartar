@@ -693,11 +693,16 @@ async function handleLogin(){
   const res = await apiPost('login', { username:user, password:pass });
   if(!res.ok){ showAuthError(res.error || 'ورود ناموفق بود.'); return; }
   document.getElementById('authError').innerHTML = '';
-  currentUser = res.result;
-  enterApp();
+ currentUser = res.result;
+
+// ذخیره لاگین
+localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+enterApp();
 }
 function handleLogout(){
   currentUser = null;
+localStorage.removeItem('currentUser');
   document.getElementById('appScreen').style.display = 'none';
   document.getElementById('authScreen').style.display = 'flex';
   document.getElementById('loginUser').value=''; document.getElementById('loginPass').value='';
@@ -1353,14 +1358,31 @@ function toLatinDigits(str){
     return ch;
   });
 }
-function normalizeDigits(el){
+ffunction normalizeDigits(el){
   const pos = el.selectionStart;
   const converted = toLatinDigits(el.value);
+
   if(converted !== el.value){
     el.value = converted;
-    try{ el.setSelectionRange(pos, pos); }catch(e){}
+    try{
+      el.setSelectionRange(pos, pos);
+    }catch(e){}
   }
 }
+
+function restoreLogin(){
+  const saved = localStorage.getItem('currentUser');
+  if(!saved) return;
+
+  try{
+    currentUser = JSON.parse(saved);
+    enterApp();
+  }catch(e){
+    localStorage.removeItem('currentUser');
+  }
+}
+
+restoreLogin();
 </script>
 </body>
 </html>
