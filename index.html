@@ -510,8 +510,7 @@
       <div class="form-grid">
         <div>
           <label>کد ملک</label>
-          <input type="text" id="fmCode" placeholder="مثلاً 501" oninput="normalizeDigits(this)">
-        </div>
+<input type="text" id="fmCode" placeholder="در حال تولید..." readonly>        </div>
         <div>
           <label>نوع ملک</label>
           <select id="fmCategory" onchange="onCategoryChange()">
@@ -537,7 +536,7 @@
         <!-- category-specific: apartments -->
         <div class="cat-block cat-apt" style="display:none;">
           <label>تعداد خواب</label>
-          <select id="fmRooms">
+          <select id="fmRooms" onchange="loadNextCode()">
             <option value="1">۱ خواب</option>
             <option value="2">۲ خواب</option>
             <option value="3">۳ خواب</option>
@@ -679,6 +678,43 @@ async function apiPost(action, payload){
     });
     return await res.json();
   } catch(e){ return { ok:false, error:'خطا در اتصال به سرور' }; }
+}
+
+async function loadNextCode(){
+
+  const physicalCategory =
+    const physicalCategory =
+  document.getElementById('fmCategory').value;
+
+const rooms =
+  document.getElementById('fmRooms')
+    ? document.getElementById('fmRooms').value
+    : 0;.value;
+
+  const rooms =
+    const physicalCategory =
+  document.getElementById('fmCategory').value;
+
+const rooms =
+  document.getElementById('fmRooms')
+    ? document.getElementById('fmRooms').value
+    : 0;.value;
+
+  const res = await apiPost(
+    'getNextCode',
+    {
+      category: physicalCategory,
+      rooms: rooms
+    }
+  );
+
+  if(res.ok){
+
+    document.getElementById('fmCode').value =
+      res.result.code;
+
+  }
+
 }
 
 // ---------------- AUTH ----------------
@@ -1113,7 +1149,13 @@ async function openAddModal(){
   ['sugg-fmPricePerMeter','sugg-fmPriceTotal'].forEach(id => { const el=document.getElementById(id); if(el){ el.style.display='none'; } });
   await populateAgentSelects();
   onCategoryChange();
-  document.getElementById('editModalOverlay').classList.add('show');
+  await populateAgentSelects();
+
+onCategoryChange();
+
+await loadNextCode();
+
+document.getElementById('editModalOverlay').classList.add('show');
 }
 
 async function openEditModal(id){
