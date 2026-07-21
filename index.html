@@ -682,37 +682,24 @@ async function apiPost(action, payload){
 
 async function loadNextCode(){
 
+  const category = document.getElementById('fmCategory').value;
+
+  const rooms = document.getElementById('fmRooms')
+    ? document.getElementById('fmRooms').value
+    : 0;
+
   const physicalCategory =
-    const physicalCategory =
-  document.getElementById('fmCategory').value;
+    category === 'apartment'
+      ? (Number(rooms) <= 2 ? 'apt2' : 'apt3')
+      : 'commercial';
 
-const rooms =
-  document.getElementById('fmRooms')
-    ? document.getElementById('fmRooms').value
-    : 0;.value;
-
-  const rooms =
-    const physicalCategory =
-  document.getElementById('fmCategory').value;
-
-const rooms =
-  document.getElementById('fmRooms')
-    ? document.getElementById('fmRooms').value
-    : 0;.value;
-
-  const res = await apiPost(
-    'getNextCode',
-    {
-      category: physicalCategory,
-      rooms: rooms
-    }
-  );
+  const res = await apiPost('getNextCode',{
+    category: physicalCategory,
+    rooms: rooms
+  });
 
   if(res.ok){
-
-    document.getElementById('fmCode').value =
-      res.result.code;
-
+    document.getElementById('fmCode').value = res.result.code;
   }
 
 }
@@ -1148,12 +1135,12 @@ async function openAddModal(){
   document.getElementById('amStorage').checked = false;
   ['sugg-fmPricePerMeter','sugg-fmPriceTotal'].forEach(id => { const el=document.getElementById(id); if(el){ el.style.display='none'; } });
   await populateAgentSelects();
-  onCategoryChange();
-  await populateAgentSelects();
 
 onCategoryChange();
 
+await loadNextCode();
 
+document.getElementById('editModalOverlay').classList.add('show');
 }
 
 async function openEditModal(id){
